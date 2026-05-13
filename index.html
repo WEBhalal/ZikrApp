@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Zikr Counter</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f5f7fa;
+      padding: 50px;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Zikr Counter</h1>
+  <h2 id="phrase">SubhanAllah</h2>
+  
+  <h1 id="count">0</h1>
+  <p>Target: 100</p>
+
+  <button onclick="increment()">+1</button>
+  <button onclick="reset()">Reset</button>
+</div>
+
+<script>
+let count = 0;
+
+function increment() {
+  count++;
+  document.getElementById("count").innerText = count;
+  localStorage.setItem("zikr", count);
+}
+
+function reset() {
+  count = 0;
+  document.getElementById("count").innerText = count;
+  localStorage.setItem("zikr", count);
+}
+
+// Load saved value
+window.onload = function() {
+  let saved = localStorage.getItem("zikr");
+  if (saved) {
+    count = saved;
+    document.getElementById("count").innerText = count;
+  }
+};
+</script>
+
+</body>
+</html>
