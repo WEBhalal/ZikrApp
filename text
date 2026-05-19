@@ -1,0 +1,186 @@
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
+
+public class MouseJiggler
+{
+    [DllImport("user32.dll")]
+ static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
+
+    const uint MOUSEEVENTF_MOVE = 0x0001;
+
+    static string[] allahNames = new string[]
+    {
+        "Ar-Rahman", "Ar-Rahim", "Al-Malik", "Al-Quddus", "As-Salam", "Al-Mu’min", "Al-Muhaymin",
+        "Al-Aziz", "Al-Jabbar", "Al-Mutakabbir", "Al-Khaliq", "Al-Bari", "Al-Musawwir", "Al-Ghaffar",
+        "Al-Qahhar", "Al-Wahhab", "Ar-Razzaq", "Al-Fattah", "Al-‘Alim", "Al-Qabid", "Al-Basit",
+        "Al-Khafid", "Ar-Rafi‘", "Al-Mu‘izz", "Al-Mudhill", "As-Sami‘", "Al-Basir", "Al-Hakam",
+        "Al-‘Adl", "Al-Latif", "Al-Khabir", "Al-Halim", "Al-‘Azim", "Al-Ghafur", "Ash-Shakur",
+        "Al-‘Aliyy", "Al-Kabir", "Al-Hafiz", "Al-Muqit", "Al-Hasib", "Al-Jalil", "Al-Karim",
+        "Ar-Raqib", "Al-Mujib", "Al-Wasi‘", "Al-Hakim", "Al-Wadud", "Al-Majid", "Al-Ba‘ith",
+        "Ash-Shahid", "Al-Haqq", "Al-Wakil", "Al-Qawiyy", "Al-Matin", "Al-Waliyy", "Al-Hamid",
+        "Al-Muhsi", "Al-Mubdi’", "Al-Mu‘id", "Al-Muhyi", "Al-Mumit", "Al-Hayy", "Al-Qayyum",
+        "Al-Wajid", "Al-Majid", "Al-Wahid", "As-Samad", "Al-Qadir", "Al-Muqtadir", "Al-Muqaddim",
+        "Al-Mu’akhkhir", "Al-Awwal", "Al-Akhir", "Az-Zahir", "Al-Batin", "Al-Wali", "Al-Muta‘ali",
+        "Al-Barr", "At-Tawwab", "Al-Muntaqim", "Al-‘Afuww", "Ar-Ra’uf", "Malik al-Mulk",
+        "Dhul-Jalali wal-Ikram", "Al-Muqsit", "Al-Jami‘", "Al-Ghaniyy", "Al-Mughni", "Al-Mani‘",
+        "Ad-Darr", "An-Nafi‘", "An-Nur", "Al-Hadi", "Al-Badi‘", "Al-Baqi", "Al-Warith", "Ar-Rashid",
+        "As-Sabur"
+    };
+
+    // Dictionary of summarized meanings (keys match the strings in allahNames)
+    static readonly Dictionary<string, string> AllahNamesMeanings = new Dictionary<string, string>
+    {
+        ["Ar-Rahman"] = "The Entirely Merciful, Everything in the universe—life, sustenance, guidance—is rooted in Allah’s mercy. Even hardships often carry hidden mercy, guiding us back to Him. The workd runs on 1% of his mercy. No sin is beyond his mercy. Every breath, heartbeat, and opportunity to repent is a sign of Ar-Rahman’s active mercy. Even the ability to recognize Him is a mercy",
+        ["Ar-Rahim"] = "The Especially Merciful.  Continuous, intimate mercy for those who believe and strive for righteousness—especially manifest in the Hereafter.. No matter how many times you fall, Ar-Raheem calls you back. His mercy is greater than your sins",
+        ["Al-Malik"] = "The Absolute King, The Sovereign Owner—the One who has complete dominion over all creation, without limitation or dependency., His ownership is absolute—He owns our lives, our time, our wealth, and even our choices. Allahumma ya Malik al-Mulk, a‘ṭini min faḍlik, waj‘alni ‘abdan khāḍi‘an limulkik, warzuqni ḥusnaṭ-ṭā‘ati wal-ikhlāṣ.",
+        ["Al-Quddus"] = "The Most Holy, Allah is free from every defect, weakness, or limitation—no partner, no child, no injustice, no forgetfulness, no death. His essence, attributes, and actions are perfect beyond human comprehension.Purify your heart from envy, arrogance, and hypocrisy.Purify your wealth. Purify your body.Subbuhun Quddusun Rabbul-mala’ikati war-rooh”",
+        ["As-Salam"] = "Source of Peace, The One who is perfectly free from all imperfections.\r\nThe Source of peace, safety, and well-being for His creation. Paradise is called Dar as-Salam (Abode of Peace) because it is the ultimate manifestation of His name. Allahumma anta as-salāmu wa minkas-salām, tabārakta yā dhal-jalāli wal-ikrām",
+        ["Al-Mu’min"] = "Giver of Security, : When you feel anxious or unsafe, remember Al-Mu’min—the only true source of security.Allahumma ya Mu’min, ammin qulubana bil-iman, waḥfaẓna minal-khawfi wal-fitan, waj‘alna fi amanik fid-dunya wal-akhirah.He removes fear, grants safety, and instills faith in hearts." +
+        "   ",
+        ["Al-Muhaymin"] = "The Guardian",
+        ["Al-Aziz"] = "The Almighty",
+        ["Al-Jabbar"] = "The Compeller",
+        ["Al-Mutakabbir"] = "Supremely Great",
+        ["Al-Khaliq"] = "The Creator",
+        ["Al-Bari"] = "The Originator",
+        ["Al-Musawwir"] = "The Fashioner",
+        ["Al-Ghaffar"] = "All-Forgiving",
+        ["Al-Qahhar"] = "All-Subduer",
+        ["Al-Wahhab"] = "Supreme Bestower",
+        ["Ar-Razzaq"] = "The Provider",
+        ["Al-Fattah"] = "The Opener",
+        ["Al-‘Alim"] = "All-Knowing",
+        ["Al-Qabid"] = "The Withholder",
+        ["Al-Basit"] = "The Expander",
+        ["Al-Khafid"] = "The Abaser",
+        ["Ar-Rafi‘"] = "The Exalter",
+        ["Al-Mu‘izz"] = "Bestower of Honor",
+        ["Al-Mudhill"] = "The Humiliator",
+        ["As-Sami‘"] = "All-Hearing",
+        ["Al-Basir"] = "All-Seeing",
+        ["Al-Hakam"] = "The Impartial Judge",
+        ["Al-‘Adl"] = "The Utterly Just",
+        ["Al-Latif"] = "Most Subtle, Gentle",
+        ["Al-Khabir"] = "All-Aware",
+        ["Al-Halim"] = "Most Forbearing",
+        ["Al-‘Azim"] = "The Magnificent",
+        ["Al-Ghafur"] = "All-Forgiving",
+        ["Ash-Shakur"] = "Most Appreciative",
+        ["Al-‘Aliyy"] = "The Most High",
+        ["Al-Kabir"] = "The Most Great",
+        ["Al-Hafiz"] = "The Preserver",
+        ["Al-Muqit"] = "The Sustainer",
+        ["Al-Hasib"] = "The Reckoner",
+        ["Al-Jalil"] = "The Majestic",
+        ["Al-Karim"] = "The Most Generous",
+        ["Ar-Raqib"] = "The Watchful",
+        ["Al-Mujib"] = "The Responsive",
+        ["Al-Wasi‘"] = "All-Encompassing",
+        ["Al-Hakim"] = "All-Wise",
+        ["Al-Wadud"] = "Most Loving",
+        ["Al-Majid"] = "Most Glorious",
+        ["Al-Ba‘ith"] = "The Resurrector",
+        ["Ash-Shahid"] = "All-Witnessing",
+        ["Al-Haqq"] = "The Absolute Truth",
+        ["Al-Wakil"] = "The Trustee",
+        ["Al-Qawiyy"] = "All-Strong",
+        ["Al-Matin"] = "The Firm",
+        ["Al-Waliyy"] = "Protecting Friend",
+        ["Al-Hamid"] = "The Praiseworthy",
+        ["Al-Muhsi"] = "All-Enumerator",
+        ["Al-Mubdi’"] = "The Originator",
+        ["Al-Mu‘id"] = "The Restorer",
+        ["Al-Muhyi"] = "Giver of Life",
+        ["Al-Mumit"] = "Creator of Death",
+        ["Al-Hayy"] = "Ever-Living",
+        ["Al-Qayyum"] = "Self-Subsisting",
+        ["Al-Wajid"] = "The Finder",
+        // Al-Majid appears twice in your array; one meaning entry covers both.
+        ["Al-Wahid"] = "The One",
+        ["As-Samad"] = "Eternal Refuge",
+        ["Al-Qadir"] = "All-Powerful",
+        ["Al-Muqtadir"] = "Omnipotent Determiner",
+        ["Al-Muqaddim"] = "The Expediter",
+        ["Al-Mu’akhkhir"] = "The Delayer",
+        ["Al-Awwal"] = "The First",
+        ["Al-Akhir"] = "The Last",
+        ["Az-Zahir"] = "The Manifest",
+        ["Al-Batin"] = "The Hidden",
+        ["Al-Wali"] = "The Patron",
+        ["Al-Muta‘ali"] = "Self-Exalted",
+        ["Al-Barr"] = "Source of Goodness",
+        ["At-Tawwab"] = "Accepter of Repentance",
+        ["Al-Muntaqim"] = "The Avenger",
+        ["Al-‘Afuww"] = "The Pardoner",
+        ["Ar-Ra’uf"] = "Most Kind",
+        ["Malik al-Mulk"] = "Owner of Sovereignty",
+        ["Dhul-Jalali wal-Ikram"] = "Lord of Majesty & Generosity",
+        ["Al-Muqsit"] = "The Equitable",
+        ["Al-Jami‘"] = "The Gatherer",
+        ["Al-Ghaniyy"] = "The Self-Sufficient",
+        ["Al-Mughni"] = "The Enricher",
+        ["Al-Mani‘"] = "The Withholder",
+        ["Ad-Darr"] = "Bringer of Harm (justly)",
+        ["An-Nafi‘"] = "Bringer of Benefit",
+        ["An-Nur"] = "The Light",
+        ["Al-Hadi"] = "The Guide",
+        ["Al-Badi‘"] = "Incomparable Originator",
+        ["Al-Baqi"] = "The Everlasting",
+        ["Al-Warith"] = "The Inheritor",
+        ["Ar-Rashid"] = "Righteous Guide",
+        ["As-Sabur"] = "The Most Patient"
+    };
+
+    public static void Main()
+    {
+        Console.Write("Enter time limit in minutes (default is 60): ");
+        string input = Console.ReadLine();
+        int limitMinutes = 60;
+
+        if (!int.TryParse(input, out limitMinutes) || limitMinutes <= 0)
+        {
+            Console.WriteLine("Invalid input. Using default limit of 60 minutes.");
+            limitMinutes = 60;
+        }
+
+        DateTime startTime = DateTime.Now;
+        DateTime endTime = startTime.AddMinutes(limitMinutes);
+
+        // NOTE: Your condition below checked 6:30 PM, but this message said 6:00 PM.
+        // Update one or the other to match. Here I set the message to 6:30 PM to match the condition.
+        Console.WriteLine($"Focus. Understand.Everything revolves around these names. Master the,. Think deep. Will run until {endTime:t} or until 6:30 PM AEST.");
+
+        TimeZoneInfo aestZone = TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
+
+        int nameIndex = 0;
+
+        while (true)
+        {
+            DateTime now = DateTime.Now;
+            DateTime aestNow = TimeZoneInfo.ConvertTime(now, aestZone);
+
+            // If you want 6:00 PM, change (aestNow.Hour == 18 && aestNow.Minute == 30) to (aestNow.Hour == 18 && aestNow.Minute == 0).
+            if (now >= endTime || (aestNow.Hour == 18 && aestNow.Minute == 30))
+            {
+                Console.WriteLine("Stopping: Time limit reached or it's 6:30 PM AEST.");
+                break;
+            }
+
+            mouse_event(MOUSEEVENTF_MOVE, 0, 1, 0, 0);
+
+            string name = allahNames[nameIndex];
+            string meaning = AllahNamesMeanings.TryGetValue(name, out var m)
+                ? m
+                : "(meaning not found)";
+
+            Console.WriteLine($"{aestNow:T} - {name} — {meaning} \n");
+
+            nameIndex = (nameIndex + 1) % allahNames.Length;
+            Thread.Sleep(20000);
+        }
+
+        Console.WriteLine(" Jiggler stopped.");
+    }
+}
